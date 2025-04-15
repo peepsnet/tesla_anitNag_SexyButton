@@ -72,23 +72,8 @@ static void changeLED() {
 }
 
 static void changeBrightness() {
-  switch (brightLED) {
-    case 10:
-      brightLED = 75; 
-      break;
-    case 75:
-      brightLED = 160;
-      break;
-    case 160:
-      brightLED = 255;
-      break;
-    case 255:
-      brightLED = 10;
-      break;
-    default:
-      brightLED = 10;
-      break;
-  }
+  brightLED  = brightLED + 60;
+  if ( brightLED > 240 ) { brightLED = 10; } 
   Serial.println("Clicked Twice! LED Brightness changed!!");
   changeLED();
 }
