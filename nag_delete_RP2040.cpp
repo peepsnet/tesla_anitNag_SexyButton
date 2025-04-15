@@ -37,6 +37,8 @@ static void pressBtnNow() {
     
     buttonPressTime = random(btnPressForMin, btnPressForMax);
     buttonPressedAt = millis();
+    powerLED.setPixelColor(0, powerLED.Color(0, 0, brightLED));
+    powerLED.show();
     Serial.println("Button Pressed!!");
   } else {
     digitalWrite(OUTPIN, LOW);
@@ -50,6 +52,7 @@ static void unPressBtnNow() {
     buttonPressed = false;
     delayBy = random(LOW_MIN, LOW_MAX);
     timeNow = millis();
+    changeLED();
     Serial.println("Button Released!!");
   } else {
     digitalWrite(OUTPIN, LOW);
