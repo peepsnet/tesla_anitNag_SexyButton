@@ -61,6 +61,7 @@ static void unPressBtnNow() {
 }
 
 static void changeLED() {
+  powerLED.clear();
   if (powerSwitch) {
     powerLED.setPixelColor(0, powerLED.Color(0, brightLED, 0));
   } else {
@@ -76,9 +77,9 @@ static void changeBrightness() {
       brightLED = 75; 
       break;
     case 75:
-      brightLED = 175;
+      brightLED = 160;
       break;
-    case 175:
+    case 160:
       brightLED = 255;
       break;
     case 255:
@@ -124,9 +125,7 @@ void setup() {
   btn.attachLongPressStart(toggleOnOff);
   btn.reset();
 
-  powerLED.clear();
-  powerLED.setPixelColor(0, powerLED.Color(100, 0, 0));
-  powerLED.show();
+  changeLED();
 
   Serial.println("Setup Complete");
 
