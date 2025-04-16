@@ -3,7 +3,9 @@ Code to use the Enhance Commander and SEXY Buttons to eliminate the Tesla Autopi
 
 I used:
 Seeed XIAO RP2040
+
 ENHANCE COmmander with a SEXY Button
+
 Digital Capacitive Touch Sensor Switch
 
 to create a NAG Eliminator for a Tesla!
