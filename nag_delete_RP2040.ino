@@ -9,10 +9,13 @@
 #define    RGBLED                 12
 #define    NUMPIXELS              1
 
-const long LOW_MIN              = random(9500, 10000);
-const long LOW_MAX              = random(12000, 12500);
-const long btnPressForMin       = random(200, 215);
-const long btnPressForMax       = random(250, 265);
+long delayLowMin;
+long delayLowMax;
+long btnPressForMin;
+long btnPressForMax;
+long x2XClickDelayMin;
+long x2XClickDelayMax;
+long doubleClickDly;
 
 bool powerSwitch                = false;
 
@@ -20,22 +23,37 @@ unsigned long timeNow           = 0;
 unsigned long delayBy           = 0;
 unsigned long timeCapture       = 0;
 bool buttonPressed              = false;
+bool doubleClicked              = 0;
+int clicksLeft                  = 0;
+
 unsigned long buttonPressedAt   = 0;
-long buttonPressTime            = 250;
+long buttonPressTime            = 175;
+
 
 int brightLED                   = 10;
 
 Adafruit_NeoPixel powerLED(NUMPIXELS, RGBLED, NEO_GRB + NEO_KHZ800);
 OneButton btn;
 
+static void randomize() {
+  delayLowMin                      = random(9500, 10000);
+  delayLowMax                      = random(12000, 12500);
+  delayBy                          = random(delayLowMin, delayLowMax);
+
+  btnPressForMin               = random(175, 200);
+  btnPressForMax               = random(235, 250);
+  buttonPressTime              = random(btnPressForMin, btnPressForMax);
+  x2XClickDelayMin             = random(90, 110);
+  x2XClickDelayMax             = random(120, 140);
+  doubleClickDly               = random(x2XClickDelayMin, x2XClickDelayMax);
+}
 
 // Handler function for a single click:
 static void pressBtnNow() {
   if (powerSwitch) {
+    randomize();
     digitalWrite(OUTPIN, HIGH);
     buttonPressed = true;
-    
-    buttonPressTime = random(btnPressForMin, btnPressForMax);
     buttonPressedAt = millis();
     powerLED.setPixelColor(0, powerLED.Color(0, 0, brightLED));
     powerLED.show();
@@ -48,9 +66,9 @@ static void pressBtnNow() {
 
 static void unPressBtnNow() {
   if (powerSwitch) {
+    randomize();
     digitalWrite(OUTPIN, LOW);
     buttonPressed = false;
-    delayBy = random(LOW_MIN, LOW_MAX);
     timeNow = millis();
     changeLED();
     Serial.println("Button Released!!");
@@ -80,7 +98,11 @@ static void changeBrightness() {
 
 static void toggleOnOff() {
   powerSwitch = !powerSwitch;
+  !powerSwitch ? unPressBtnNow() : void();
+  randomize();
   changeLED();
+  doubleClicked = true;
+  clicksLeft = 2;
   Serial.println("LONG Clicked! Power Toggled!!");
 }
 
@@ -99,10 +121,9 @@ void setup() {
   digitalWrite(LEDPIN, LOW);
   digitalWrite(OUTPIN, LOW);
   digitalWrite(POWER, HIGH);
-
   
   timeNow = millis();
-  delayBy = random(LOW_MIN, LOW_MAX);
+  randomize();
 
   btn.setup(INPIN, INPUT_PULLUP, false);
   btn.attachClick(pressBtnNow);
@@ -120,12 +141,24 @@ void loop() {
 
   btn.tick();
 
-  if (millis() - timeNow > delayBy && !buttonPressed && powerSwitch) {
+  if (millis() - timeNow > delayBy && !buttonPressed && !doubleClicked && powerSwitch) {
     pressBtnNow();
   }
 
-  if (millis() - buttonPressedAt > buttonPressTime && buttonPressed & powerSwitch) {
+  if (millis() - buttonPressedAt > buttonPressTime && buttonPressed && !doubleClicked && powerSwitch) {
     unPressBtnNow();
+  }
+
+  if (millis() - buttonPressedAt > buttonPressTime && !buttonPressed && doubleClicked && clicksLeft > 0 && powerSwitch) {
+    pressBtnNow();
+  }
+
+  if (millis() - buttonPressedAt > doubleClickDly && buttonPressed && doubleClicked && powerSwitch) {
+    clicksLeft--;
+    unPressBtnNow();
+    if (clicksLeft == 0) {
+      doubleClicked = false;
+    }
   }
 
 }
