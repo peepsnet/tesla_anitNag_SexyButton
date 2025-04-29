@@ -4,7 +4,7 @@ Code to use the Enhance Commander and SEXY Buttons to eliminate the Tesla Autopi
 I used:
 Seeed XIAO RP2040
 
-ENHANCE COmmander with a SEXY Button
+ENHANCE Commander with a SEXY Button
 
 Digital Capacitive Touch Sensor Switch
 
