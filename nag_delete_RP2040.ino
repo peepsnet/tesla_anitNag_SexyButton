@@ -1,13 +1,21 @@
+/*
+Written for the SEEED PR2040
+
+
+
+
+
+*/
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 #include <OneButton.h>
 
-#define    OUTPIN                 D10
-#define    INPIN                  D0
-#define    LEDPIN                 25
-#define    POWER                  11
-#define    RGBLED                 12
-#define    NUMPIXELS              1
+#define    OUTPIN                 D10   // OUTPUT Trigger SEXY BUTTON
+#define    INPIN                  D8    // INPUT from Switch
+#define    LEDPIN                 25    // Internal LED Pin
+#define    POWER                  11    // OnBoard RGB LED power. Set to HIGH to turn on
+#define    RGBLED                 12    // OnBoard RGB LED Control Pin. 
+#define    NUMPIXELS              1     // Number of RGB LEDs for NeoPixel
 
 long delayLowMin;
 long delayLowMax;
@@ -52,14 +60,15 @@ static void randomize() {
 static void pressBtnNow() {
   if (powerSwitch) {
     randomize();
-    digitalWrite(OUTPIN, HIGH);
+    pinMode(OUTPIN, OUTPUT);
+    digitalWrite(OUTPIN, LOW);
     buttonPressed = true;
     buttonPressedAt = millis();
     powerLED.setPixelColor(0, powerLED.Color(0, 0, brightLED));
     powerLED.show();
     Serial.println("Button Pressed!!");
   } else {
-    digitalWrite(OUTPIN, LOW);
+    pinMode(OUTPIN, INPUT);
     Serial.println("Power is OFF. Do nothing!!!!");
   }
 }
@@ -67,13 +76,13 @@ static void pressBtnNow() {
 static void unPressBtnNow() {
   if (powerSwitch) {
     randomize();
-    digitalWrite(OUTPIN, LOW);
+    pinMode(OUTPIN, INPUT);
     buttonPressed = false;
     timeNow = millis();
     changeLED();
     Serial.println("Button Released!!");
   } else {
-    digitalWrite(OUTPIN, LOW);
+    pinMode(OUTPIN, INPUT);
     Serial.println("Power is OFF. Do nothing!!!!");
   }
 }
@@ -86,7 +95,7 @@ static void changeLED() {
     powerLED.setPixelColor(0, powerLED.Color(brightLED, 0, 0));
   }
   powerLED.show();
-  Serial.println("LED CHANGED!!");
+  Serial.println("LED Color CHANGED!!");
 }
 
 static void changeBrightness() {
@@ -113,7 +122,7 @@ void setup() {
 
   powerLED.begin();
 
-  pinMode(OUTPIN, OUTPUT);
+  pinMode(OUTPIN, INPUT);       // We need to set this pin to an INPUT to start so no voltage is sent to the SEXY Button
   pinMode(INPIN, INPUT);    
   pinMode(LEDPIN, OUTPUT);
   pinMode(POWER, OUTPUT);
